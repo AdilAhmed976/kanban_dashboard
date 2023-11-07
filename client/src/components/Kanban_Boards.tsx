@@ -46,14 +46,19 @@ const Kanban_Boards: React.FC<Kanban_BoardsProps> = () => {
 
   const boardId = useMemo(() => boards.map((col) => col.id), [boards]);
 
+  const sensors = () => {};
+  const onDragStart = () => {};
+  const onDragEnd = () => {};
+  const onDragOver = () => {};
+
   return (
     <div className="flex flex-col justify-space-between h-screen p-10 gap-10 bg-black">
       <div className="m-auto flex gap-4 h-[90%] w-full items-center overflow-x-auto overflow-y-hidden">
         <DndContext
-        // sensors={sensors}
-        // // onDragStart={onDragStart}
-        // onDragEnd={onDragEnd}
-        // onDragOver={onDragOver}
+          sensors={sensors}
+          onDragStart={onDragStart}
+          onDragEnd={onDragEnd}
+          onDragOver={onDragOver}
         >
           <SortableContext items={boardId}>
             {boards?.map((element: boardsObj) => {
