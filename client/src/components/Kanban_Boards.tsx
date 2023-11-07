@@ -7,26 +7,16 @@ import {
   DragEndEvent,
   DragOverEvent,
   DragOverlay,
+  DragStartEvent,
   PointerSensor,
   useSensor,
   useSensors,
 } from "@dnd-kit/core";
 import { SortableContext, arrayMove } from "@dnd-kit/sortable";
 import { createPortal } from "react-dom";
+import { boardsObj, todoObj } from "@/types";
 
 type Kanban_BoardsProps = {};
-
-interface boardsObj {
-  id: string;
-  name: string;
-  description: string;
-}
-interface taskObj {
-  id: string;
-  name: string;
-  description: string;
-  status: string;
-}
 
 const Kanban_Boards: React.FC<Kanban_BoardsProps> = () => {
   const [boards, setBoards] = useState<boardsObj[]>([
@@ -56,26 +46,37 @@ const Kanban_Boards: React.FC<Kanban_BoardsProps> = () => {
     },
   ]);
 
-  const [boardName, setBoardName] = useState<String | null>(null);
-  const [boardDescription, setBoardDescription] = useState<String | null>(null);
-  const handleAddBoard = () => {};
+  const [boardName, setBoardName] = useState<string>("");
+  const [boardDescription, setBoardDescription] = useState<string>("");
+  const handleAddBoard = () => {
+    if (!boardName || !boardDescription) {
+      alert("Name / Description Cannot be Empty");
+      return;
+    }
+    let obj: boardsObj = {
+      id: generateId(),
+      name: boardName,
+      description: boardDescription,
+    };
+    setBoards([...boards, obj]);
+  };
 
   const [activeBoard, setActiveBoard] = useState<boardsObj | null>(null);
-  const [activeTask, setActiveTask] = useState<taskObj | null>(null);
+  const [activeTask, setActiveTask] = useState<todoObj | null>(null);
 
   const boardId = useMemo(() => boards.map((col) => col.id), [boards]);
 
-  // const sensors = useSensors(
-  //   useSensor(PointerSensor, {
-  //     activationConstraint: {
-  //       distance: 10,
-  //     },
-  //   })
-  // );
-  const onDragStart = (e: any) => {
-    console.log("🚀 ~ file: Kanban_Boards.tsx:74 ~ onDragStart ~ e:", e);
-    if (e.active.data.current?.type === "board") {
-      setActiveBoard(e.active.data.current?.board);
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 10,
+      },
+    })
+  );
+  const onDragStart = (event: DragStartEvent) => {
+    console.log("🚀 ~ file: Kanban_Boards.tsx:77 ~ onDragStart ~ event:", event)
+    if (event.active.data.current?.type === "board") {
+      setActiveBoard(event.active.data.current?.board);
     }
   };
   const onDragEnd = (event: DragEndEvent) => {
@@ -89,17 +90,14 @@ const Kanban_Boards: React.FC<Kanban_BoardsProps> = () => {
       const overIndex = board.findIndex((t) => t.id === overId);
       return arrayMove(boards, activeIndex, overIndex);
     });
-    
   };
-  const onDragOver = (event:DragOverEvent) => {
-    
-  };
+  const onDragOver = (event: DragOverEvent) => {};
 
   return (
     <div className="flex flex-col justify-space-between h-screen p-10 gap-10 bg-black">
       <div className="m-auto flex gap-4 h-[90%] w-full items-center overflow-x-auto overflow-y-hidden">
         <DndContext
-          // sensors={sensors}
+          sensors={sensors}
           onDragStart={onDragStart}
           onDragEnd={onDragEnd}
           onDragOver={onDragOver}
@@ -112,7 +110,9 @@ const Kanban_Boards: React.FC<Kanban_BoardsProps> = () => {
 
           {createPortal(
             <DragOverlay>
-              {activeBoard && <BoardCard board={activeBoard} />}
+              {activeBoard && (
+                <BoardCard key={activeBoard?.id as Key} board={activeBoard} />
+              )}
             </DragOverlay>,
             document.body
           )}
@@ -121,10 +121,18 @@ const Kanban_Boards: React.FC<Kanban_BoardsProps> = () => {
       <div className="flex flex-col m-auto gap-2">
         <div className="flex flex-row gap-4">
           <input
+            value={boardName}
+            onChange={(e) => {
+              setBoardName(e.target.value);
+            }}
             className="bg-transparent border rounded-lg p-2 hover:ring-2"
             placeholder="Add Name..."
           />
           <input
+            value={boardDescription}
+            onChange={(e) => {
+              setBoardDescription(e.target.value);
+            }}
             className="bg-transparent border rounded-lg p-2 hover:ring-2"
             placeholder="Add Description..."
           />
