@@ -1,20 +1,18 @@
+import { todoObj } from "@/types";
 import { SortableContext } from "@dnd-kit/sortable";
 import React, { useMemo } from "react";
 import TaskCard from "./TaskCard";
-import { todoObj } from "@/types";
 
-type TodoColumnProps = {
+type InProgressColoumnProps = {
   items: todoObj[];
-  boardId: string;
 };
 
-const TodoColumn: React.FC<TodoColumnProps> = ({ items, boardId }) => {
+const InProgressColoumn: React.FC<InProgressColoumnProps> = ({ items }) => {
   const todoId = useMemo(() => items.map((col) => col.id), [items]);
-
   return (
     <div className="w-[33%] -h-[100%]">
       <text>Todo</text>
-      <div className="w-[100%] h-[90%] border border-red-500 overflow-x-hidden overflow-y-scroll">
+      <div className="w-[100%] h-[90%] overflow-x-hidden overflow-y-scroll">
         <SortableContext items={todoId}>
           {items?.map((el: todoObj) => {
             return (
@@ -31,4 +29,4 @@ const TodoColumn: React.FC<TodoColumnProps> = ({ items, boardId }) => {
     </div>
   );
 };
-export default TodoColumn;
+export default InProgressColoumn;

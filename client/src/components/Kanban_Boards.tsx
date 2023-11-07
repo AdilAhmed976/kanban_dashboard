@@ -15,6 +15,7 @@ import {
 import { SortableContext, arrayMove } from "@dnd-kit/sortable";
 import { createPortal } from "react-dom";
 import { boardsObj, todoObj } from "@/types";
+import TaskCard from "./TaskCard";
 
 type Kanban_BoardsProps = {};
 
@@ -63,41 +64,61 @@ const Kanban_Boards: React.FC<Kanban_BoardsProps> = () => {
 
   const [activeBoard, setActiveBoard] = useState<boardsObj | null>(null);
   const [activeTask, setActiveTask] = useState<todoObj | null>(null);
+  // console.log("🚀 ~ file: Kanban_Boards.tsx:65 ~ activeBoard:", activeBoard);
+  // console.log("🚀 ~ file: Kanban_Boards.tsx:67 ~ activeTask:", activeTask);
 
   const boardId = useMemo(() => boards.map((col) => col.id), [boards]);
 
-  const sensors = useSensors(
-    useSensor(PointerSensor, {
-      activationConstraint: {
-        distance: 10,
-      },
-    })
-  );
+  // const sensors = useSensors(
+  //   useSensor(PointerSensor, {
+  //     activationConstraint: {
+  //       distance: 10,
+  //     },
+  //   })
+  // );
   const onDragStart = (event: DragStartEvent) => {
-    console.log("🚀 ~ file: Kanban_Boards.tsx:77 ~ onDragStart ~ event:", event)
+    console.log(
+      "🚀 ~ file: Kanban_Boards.tsx:80 ~ onDragStart ~ event:",
+      event
+    );
+
     if (event.active.data.current?.type === "board") {
       setActiveBoard(event.active.data.current?.board);
+      return;
+    }
+    if (event.active.data.current?.type === "task") {
+      setActiveTask(event.active.data.current?.item);
+      return;
     }
   };
   const onDragEnd = (event: DragEndEvent) => {
     setActiveTask(null);
     setActiveBoard(null);
+
     const { active, over } = event;
     const activeId = active?.id;
     const overId = over?.id;
-    setBoards((board) => {
-      const activeIndex = board.findIndex((t) => t.id === activeId);
-      const overIndex = board.findIndex((t) => t.id === overId);
-      return arrayMove(boards, activeIndex, overIndex);
-    });
+    if (activeBoard) {
+      setBoards((board) => {
+        const activeIndex = board.findIndex((t) => t.id === activeId);
+        const overIndex = board.findIndex((t) => t.id === overId);
+        return arrayMove(boards, activeIndex, overIndex);
+      });
+    }
+    if(activeTask) {
+      
+    }
   };
-  const onDragOver = (event: DragOverEvent) => {};
+  const onDragOver = (event: DragOverEvent) => {
+    // setActiveTask(null);
+    // setActiveBoard(null);
+  };
 
   return (
     <div className="flex flex-col justify-space-between h-screen p-10 gap-10 bg-black">
       <div className="m-auto flex gap-4 h-[90%] w-full items-center overflow-x-auto overflow-y-hidden">
         <DndContext
-          sensors={sensors}
+          // sensors={sensors}
           onDragStart={onDragStart}
           onDragEnd={onDragEnd}
           onDragOver={onDragOver}
@@ -110,8 +131,16 @@ const Kanban_Boards: React.FC<Kanban_BoardsProps> = () => {
 
           {createPortal(
             <DragOverlay>
-              {activeBoard && (
+              {activeBoard && !activeTask && (
                 <BoardCard key={activeBoard?.id as Key} board={activeBoard} />
+              )}
+              {activeTask && !activeBoard && (
+                <TaskCard
+                  key={activeTask.id}
+                  item={activeTask}
+                  boardId={"kljkk"}
+                  allItems={[]}
+                />
               )}
             </DragOverlay>,
             document.body
