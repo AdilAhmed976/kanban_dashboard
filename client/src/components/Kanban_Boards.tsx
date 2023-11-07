@@ -2,8 +2,17 @@
 import { generateId } from "@/common/utils";
 import React, { Key, useMemo, useState } from "react";
 import BoardCard from "./BoardCard";
-import { DndContext } from "@dnd-kit/core";
-import { SortableContext } from "@dnd-kit/sortable";
+import {
+  DndContext,
+  DragEndEvent,
+  DragOverEvent,
+  DragOverlay,
+  PointerSensor,
+  useSensor,
+  useSensors,
+} from "@dnd-kit/core";
+import { SortableContext, arrayMove } from "@dnd-kit/sortable";
+import { createPortal } from "react-dom";
 
 type Kanban_BoardsProps = {};
 
@@ -11,6 +20,12 @@ interface boardsObj {
   id: string;
   name: string;
   description: string;
+}
+interface taskObj {
+  id: string;
+  name: string;
+  description: string;
+  status: string;
 }
 
 const Kanban_Boards: React.FC<Kanban_BoardsProps> = () => {
@@ -23,39 +38,68 @@ const Kanban_Boards: React.FC<Kanban_BoardsProps> = () => {
     },
     {
       id: generateId(),
-      name: "adil",
+      name: "Asim",
       description:
         "Lorem ipsum, dolor sit amet consectetur adipisicing elit. Porro temporibus ratione nihil, eius veritatis eaque repellendus dolores laudantium provident fugit non suscipit, nulla aperiam sapiente esse voluptate. Aut, dolore animi?",
     },
     {
       id: generateId(),
-      name: "adil",
+      name: "Hassan",
       description:
         "Lorem ipsum, dolor sit amet consectetur adipisicing elit. Porro temporibus ratione nihil, eius veritatis eaque repellendus dolores laudantium provident fugit non suscipit, nulla aperiam sapiente esse voluptate. Aut, dolore animi?",
     },
     {
       id: generateId(),
-      name: "adil",
+      name: "Dabeer",
       description:
         "Lorem ipsum, dolor sit amet consectetur adipisicing elit. Porro temporibus ratione nihil, eius veritatis eaque repellendus dolores laudantium provident fugit non suscipit, nulla aperiam sapiente esse voluptate. Aut, dolore animi?",
     },
   ]);
 
-  const [boardName, setBoardName] = useState<boardsObj[]>([]);
+  const [boardName, setBoardName] = useState<String | null>(null);
+  const [boardDescription, setBoardDescription] = useState<String | null>(null);
   const handleAddBoard = () => {};
+
+  const [activeBoard, setActiveBoard] = useState<boardsObj | null>(null);
+  const [activeTask, setActiveTask] = useState<taskObj | null>(null);
 
   const boardId = useMemo(() => boards.map((col) => col.id), [boards]);
 
-  const sensors = () => {};
-  const onDragStart = () => {};
-  const onDragEnd = () => {};
-  const onDragOver = () => {};
+  // const sensors = useSensors(
+  //   useSensor(PointerSensor, {
+  //     activationConstraint: {
+  //       distance: 10,
+  //     },
+  //   })
+  // );
+  const onDragStart = (e: any) => {
+    console.log("🚀 ~ file: Kanban_Boards.tsx:74 ~ onDragStart ~ e:", e);
+    if (e.active.data.current?.type === "board") {
+      setActiveBoard(e.active.data.current?.board);
+    }
+  };
+  const onDragEnd = (event: DragEndEvent) => {
+    setActiveTask(null);
+    setActiveBoard(null);
+    const { active, over } = event;
+    const activeId = active?.id;
+    const overId = over?.id;
+    setBoards((board) => {
+      const activeIndex = board.findIndex((t) => t.id === activeId);
+      const overIndex = board.findIndex((t) => t.id === overId);
+      return arrayMove(boards, activeIndex, overIndex);
+    });
+    
+  };
+  const onDragOver = (event:DragOverEvent) => {
+    
+  };
 
   return (
     <div className="flex flex-col justify-space-between h-screen p-10 gap-10 bg-black">
       <div className="m-auto flex gap-4 h-[90%] w-full items-center overflow-x-auto overflow-y-hidden">
         <DndContext
-          sensors={sensors}
+          // sensors={sensors}
           onDragStart={onDragStart}
           onDragEnd={onDragEnd}
           onDragOver={onDragOver}
@@ -65,6 +109,13 @@ const Kanban_Boards: React.FC<Kanban_BoardsProps> = () => {
               return <BoardCard key={element.id as Key} board={element} />;
             })}
           </SortableContext>
+
+          {createPortal(
+            <DragOverlay>
+              {activeBoard && <BoardCard board={activeBoard} />}
+            </DragOverlay>,
+            document.body
+          )}
         </DndContext>
       </div>
       <div className="flex flex-col m-auto gap-2">

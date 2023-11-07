@@ -61,7 +61,7 @@ const BoardCard: React.FC<BoardCardProps> = ({ board }) => {
     >
       <div className="p-1">
         <p>{board.id}</p>
-        <p className="truncate">{board.description}</p>
+        <p className="truncate">{board.name}</p>
         <p className="truncate">{board.description}</p>
       </div>
       {/* <TodoColumn item={todos.filter((t: todoObj) => t.status === "TODO")} /> */}
