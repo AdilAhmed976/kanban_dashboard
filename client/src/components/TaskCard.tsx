@@ -1,4 +1,5 @@
 import { todoObj } from "@/types";
+import { DragOverlay } from "@dnd-kit/core";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import React from "react";
@@ -25,7 +26,8 @@ const TaskCard: React.FC<TaskCardProps> = ({
     transition,
     isDragging,
   } = useSortable({
-    id: item.id + boardId,
+    // id: item.id + boardId,
+    id: item.id,
     data: {
       type: "task",
       item: { ...item, boardId },
@@ -42,13 +44,13 @@ const TaskCard: React.FC<TaskCardProps> = ({
   if (isDragging) {
     return (
       <div
-        className=" min-w-[100%] w-[100%] p-2 mb-2 rounded-lg border border-pink box-border relative"
+        className=" min-w-[100%] w-[100%] p-2 mb-2 rounded-lg border border-white box-border relative"
         ref={setNodeRef}
         key={key}
+        style={style}
       >
-        {item.name}
-        {item.id}
-
+        <text>{item.name}</text>
+        <p>{item.id}</p>
         <MdDragIndicator
           {...attributes}
           {...listeners}
@@ -64,9 +66,10 @@ const TaskCard: React.FC<TaskCardProps> = ({
       className=" min-w-[100%] w-[100%] p-2 mb-2 rounded-lg border border-white box-border relative"
       ref={setNodeRef}
       key={key}
+      style={style}
     >
-      {item.name}
-      {item.id}
+      <text>{item.name}</text>
+      <p>{item.id}</p>
       <MdDragIndicator
         {...attributes}
         {...listeners}

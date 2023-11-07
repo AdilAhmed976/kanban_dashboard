@@ -69,18 +69,14 @@ const Kanban_Boards: React.FC<Kanban_BoardsProps> = () => {
 
   const boardId = useMemo(() => boards.map((col) => col.id), [boards]);
 
-  // const sensors = useSensors(
-  //   useSensor(PointerSensor, {
-  //     activationConstraint: {
-  //       distance: 10,
-  //     },
-  //   })
-  // );
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 10,
+      },
+    })
+  );
   const onDragStart = (event: DragStartEvent) => {
-    console.log(
-      "🚀 ~ file: Kanban_Boards.tsx:80 ~ onDragStart ~ event:",
-      event
-    );
 
     if (event.active.data.current?.type === "board") {
       setActiveBoard(event.active.data.current?.board);
@@ -104,12 +100,24 @@ const Kanban_Boards: React.FC<Kanban_BoardsProps> = () => {
         const overIndex = board.findIndex((t) => t.id === overId);
         return arrayMove(boards, activeIndex, overIndex);
       });
-    }
-    if(activeTask) {
-      
+      return;
     }
   };
+
   const onDragOver = (event: DragOverEvent) => {
+    const { active, over } = event;
+    console.log(
+      "🚀 ~ file: Kanban_Boards.tsx:119 ~ onDragOver ~ active:",
+      active
+    );
+
+    let activeBoardId = active?.data?.current?.item?.boardId;
+    let overBoardId = over?.data?.current?.item?.boardId;
+    if (activeBoardId !== overBoardId) return;
+    console.log(
+      "🚀 ~ file: Kanban_Boards.tsx:117 ~ onDragOver ~ event:",
+      event
+    );
     // setActiveTask(null);
     // setActiveBoard(null);
   };
@@ -118,7 +126,7 @@ const Kanban_Boards: React.FC<Kanban_BoardsProps> = () => {
     <div className="flex flex-col justify-space-between h-screen p-10 gap-10 bg-black">
       <div className="m-auto flex gap-4 h-[90%] w-full items-center overflow-x-auto overflow-y-hidden">
         <DndContext
-          // sensors={sensors}
+          sensors={sensors}
           onDragStart={onDragStart}
           onDragEnd={onDragEnd}
           onDragOver={onDragOver}
@@ -128,17 +136,16 @@ const Kanban_Boards: React.FC<Kanban_BoardsProps> = () => {
               return <BoardCard key={element.id as Key} board={element} />;
             })}
           </SortableContext>
-
           {createPortal(
             <DragOverlay>
-              {activeBoard && !activeTask && (
+              {activeBoard && (
                 <BoardCard key={activeBoard?.id as Key} board={activeBoard} />
               )}
-              {activeTask && !activeBoard && (
+              {activeTask && (
                 <TaskCard
                   key={activeTask.id}
                   item={activeTask}
-                  boardId={"kljkk"}
+                  boardId={"CUSTOME"}
                   allItems={[]}
                 />
               )}

@@ -1,9 +1,13 @@
 import React, { useMemo, useState } from "react";
 import TodoColumn from "./TodoColumn";
-import { useSortable } from "@dnd-kit/sortable";
+import { SortableContext, useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { generateId } from "@/common/utils";
 import { MdDragIndicator } from "react-icons/md";
+import InProgressColumn from "./InProgressColumn";
+import CompletedColumn from "./CompletedColumn";
+import { todoObj } from "@/types";
+import TaskCard from "./TaskCard";
 
 interface BoardCardProps {
   board: boardObj; // Specify that the 'board' prop should be of type 'boardObj'
@@ -14,13 +18,6 @@ interface boardObj {
   name: string;
   description: string;
 }
-interface todoObj {
-  id: string;
-  name: string;
-  description: string;
-  status: string;
-}
-
 const BoardCard: React.FC<BoardCardProps> = ({ board }) => {
   const {
     setNodeRef,
@@ -41,78 +38,21 @@ const BoardCard: React.FC<BoardCardProps> = ({ board }) => {
     transition,
     transform: CSS.Transform.toString(transform),
   };
-  const [todos, setTodos] = useState<todoObj[]>([
-    {
-      id: generateId(),
-      name: "string",
-      description: "string",
-      status: "TODO",
-    },
-    {
-      id: generateId(),
-      name: "string",
-      description: "string",
-      status: "TODO",
-    },
-    {
-      id: generateId(),
-      name: "string",
-      description: "string",
-      status: "TODO",
-    },
-    {
-      id: generateId(),
-      name: "string",
-      description: "string",
-      status: "TODO",
-    },
-    {
-      id: generateId(),
-      name: "string",
-      description: "string",
-      status: "TODO",
-    },
-    {
-      id: generateId(),
-      name: "string",
-      description: "string",
-      status: "TODO",
-    },
-    {
-      id: generateId(),
-      name: "string",
-      description: "string",
-      status: "TODO",
-    },
-    {
-      id: generateId(),
-      name: "string",
-      description: "string",
-      status: "TODO",
-    },
-    {
-      id: generateId(),
-      name: "string",
-      description: "string",
-      status: "TODO",
-    },
-    {
-      id: generateId(),
-      name: "string",
-      description: "string",
-      status: "TODO",
-    },
-  ]);
+  const [todos, setTodos] = useState<{
+    todo: todoObj[];
+    in_progress: todoObj[];
+    completed: todoObj[];
+  }>({
+    todo: [
+      { id: "string", name: "string", description: "string", status: "TODO" },
+      { id: "string-2", name: "string", description: "string", status: "TODO" },
+      { id: "string-3", name: "string", description: "string", status: "TODO" },
+    ],
+    in_progress: [],
+    completed: [],
+  });
 
-  const todosTodo = useMemo(() => todos.filter((t) => t.status === "TODO"), []);
-  const todosInProgress = useMemo(
-    () => todos.filter((t) => t.status === "IN_PROGRESS"),
-    []
-  );
-  const todosCompleted = useMemo(
-    () => todos.filter((t) => t.status === "COMPLETED"),
-    [todos]
-  );
+  const todoId = useMemo(() => todos.todo?.map((col) => col.id), [todos]);
 
   if (isDragging) {
     return (
@@ -133,26 +73,42 @@ const BoardCard: React.FC<BoardCardProps> = ({ board }) => {
 
   return (
     <div
+      style={style}
       ref={setNodeRef}
       className="p-2 min-w-[70%] w-[70%] border border-white h-[90%] rounded-lg"
     >
       <div className="p-1">
-        <MdDragIndicator
-          {...attributes}
-          {...listeners}
-          color={"white"}
-          className=":hover bg-red"
-        />
+        <MdDragIndicator {...attributes} {...listeners} color={"white"} />
         <p>{board.id}</p>
         <p className="truncate">{board.name}</p>
         <p className="truncate">{board.description}</p>
       </div>
       <div className="p-2 h-[80%] border-white flex flex-row">
-        <TodoColumn items={todosTodo} boardId={board.id} />
-        {/* <TodoColumn items={todosInProgress} />
-        <TodoColumn items={todosCompleted} /> */}
+        <TodoColumn items={todos.todo} boardId={board.id} />
+        <InProgressColumn items={todos.in_progress} boardId={board.id} />
+        <CompletedColumn items={todos.completed} boardId={board.id} />
       </div>
     </div>
   );
 };
 export default BoardCard;
+
+//  <div className="w-[33%] h-[100%]">
+//   <div>Todo</div>
+//   <div className="w-[100%] h-[90%] border border-red-500 overflow-x-hidden overflow-y-scroll">
+//     {/* <DndContext> */}
+//     <SortableContext items={todoId}>
+//       {todos.todo?.map((el: todoObj) => {
+//         return (
+//           <TaskCard
+//             key={el.id}
+//             item={el}
+//             boardId={board.id}
+//             allItems={todos.todo}
+//           />
+//         );
+//       })}
+//     </SortableContext>
+//     {/* </DndContext> */}
+//   </div>
+// </div>

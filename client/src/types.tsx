@@ -2,7 +2,7 @@ export interface todoObj {
   id: string;
   name: string;
   description: string;
-  status: string;
+  status: "TODO" | "IN-PROGRESS" | "COMPLETED";
 }
 
 export interface boardsObj {
