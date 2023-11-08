@@ -16,8 +16,8 @@ const CompletedColumn: React.FC<CompletedColumnProps> = ({
   return (
     <div className="w-[33%] -h-[100%]">
       <text>Completed</text>
-      <div className="w-[100%] h-[90%] border border-red-500 overflow-x-hidden overflow-y-scroll">
-        <SortableContext items={todoId}>
+      <div className="w-[100%] h-[90%] overflow-x-hidden overflow-y-scroll">
+        {/* <SortableContext items={todoId}> */}
           {items?.map((el: todoObj) => {
             return (
               <TaskCard
@@ -28,7 +28,7 @@ const CompletedColumn: React.FC<CompletedColumnProps> = ({
               />
             );
           })}
-        </SortableContext>
+        {/* </SortableContext> */}
       </div>
     </div>
   );

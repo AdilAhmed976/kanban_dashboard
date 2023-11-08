@@ -77,15 +77,14 @@ const Kanban_Boards: React.FC<Kanban_BoardsProps> = () => {
     })
   );
   const onDragStart = (event: DragStartEvent) => {
-
     if (event.active.data.current?.type === "board") {
       setActiveBoard(event.active.data.current?.board);
       return;
     }
-    if (event.active.data.current?.type === "task") {
-      setActiveTask(event.active.data.current?.item);
-      return;
-    }
+    // if (event.active.data.current?.type === "task") {
+    //   setActiveTask(event.active.data.current?.item);
+    //   return;
+    // }
   };
   const onDragEnd = (event: DragEndEvent) => {
     setActiveTask(null);
@@ -123,8 +122,8 @@ const Kanban_Boards: React.FC<Kanban_BoardsProps> = () => {
   };
 
   return (
-    <div className="flex flex-col justify-space-between h-screen p-10 gap-10 bg-black">
-      <div className="m-auto flex gap-4 h-[90%] w-full items-center overflow-x-auto overflow-y-hidden">
+    <div className="flex flex-col justify-space-between h-screen p-4 gap-4 bg-black">
+      <div className="m-auto flex gap-4 h-[100%] w-full items-center overflow-x-auto overflow-y-hidden">
         <DndContext
           sensors={sensors}
           onDragStart={onDragStart}
@@ -141,20 +140,20 @@ const Kanban_Boards: React.FC<Kanban_BoardsProps> = () => {
               {activeBoard && (
                 <BoardCard key={activeBoard?.id as Key} board={activeBoard} />
               )}
-              {activeTask && (
+              {/* {activeTask && (
                 <TaskCard
                   key={activeTask.id}
                   item={activeTask}
                   boardId={"CUSTOME"}
                   allItems={[]}
                 />
-              )}
+              )} */}
             </DragOverlay>,
             document.body
           )}
         </DndContext>
       </div>
-      <div className="flex flex-col m-auto gap-2">
+      <div className="flex flex-col m-auto gap-2 border-2 border-red-300 w-[100%]">
         <div className="flex flex-row gap-4">
           <input
             value={boardName}

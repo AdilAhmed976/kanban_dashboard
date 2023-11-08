@@ -27,7 +27,8 @@ const TaskCard: React.FC<TaskCardProps> = ({
     isDragging,
   } = useSortable({
     // id: item.id + boardId,
-    id: item.id,
+    id: item.id
+    ,
     data: {
       type: "task",
       item: { ...item, boardId },
@@ -44,7 +45,7 @@ const TaskCard: React.FC<TaskCardProps> = ({
   if (isDragging) {
     return (
       <div
-        className=" min-w-[100%] w-[100%] p-2 mb-2 rounded-lg border border-white box-border relative"
+        className=" min-w-[100%] w-[100%] p-2 mb-2 rounded-lg border border-pink-500 box-border relative"
         ref={setNodeRef}
         key={key}
         style={style}

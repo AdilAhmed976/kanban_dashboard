@@ -17,8 +17,8 @@ const InProgressColumn: React.FC<InProgressColumnProps> = ({
   return (
     <div className="w-[33%] -h-[100%]">
       <text>In Progress</text>
-      <div className="w-[100%] h-[90%] border border-red-500 overflow-x-hidden overflow-y-scroll">
-        <SortableContext items={todoId}>
+      <div className="w-[100%] h-[90%] overflow-x-hidden overflow-y-scroll">
+        {/* <SortableContext items={todoId}> */}
           {items?.map((el: todoObj) => {
             return (
               <TaskCard
@@ -29,7 +29,7 @@ const InProgressColumn: React.FC<InProgressColumnProps> = ({
               />
             );
           })}
-        </SortableContext>
+        {/* </SortableContext> */}
       </div>
     </div>
   );
